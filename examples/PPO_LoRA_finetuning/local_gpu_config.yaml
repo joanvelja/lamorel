@@ -10,20 +10,48 @@ lamorel_args:
     main_process_ip: 127.0.0.1
     num_machines: 1
   llm_args:
-    model_type: seq2seq
-    model_path: t5-small
-    pretrained: true
-    minibatch_size: 192
-    pre_encode_inputs: true
-    load_in_4bit: false
-    parallelism:
-      use_gpu: true
-      model_parallelism_size: 1
-      synchronize_gpus_after_scoring: false
-      empty_cuda_cache_after_scoring: false
+    encoder:
+      model_type: causal
+      model_path: google/gemma-2-9b
+      pretrained: true
+      minibatch_size: 192
+      pre_encode_inputs: true
+      load_in_4bit: true
+
+      parallelism:
+        use_gpu: true
+        model_parallelism_size: 1
+        synchronize_gpus_after_scoring: false
+        empty_cuda_cache_after_scoring: false
+    decoder:
+      model_type: classification
+      model_path: bert-base-uncased
+      pretrained: true
+      minibatch_size: 192
+      pre_encode_inputs: true
+
+      parallelism:
+        use_gpu: true
+        model_parallelism_size: 1
+        synchronize_gpus_after_scoring: false
+        empty_cuda_cache_after_scoring: false
+      overseer:
+        model_type: None
+        model_path: bert-base-uncased
+        pretrained: true
+        minibatch_size: 192
+        pre_encode_inputs: true
+
+        parallelism:
+          use_gpu: true
+          model_parallelism_size: 1
+          synchronize_gpus_after_scoring: false
+          empty_cuda_cache_after_scoring: false
+
 rl_script_args:
   path: ???
   seed: 1
+  dataset_path: "jvelja/stegoData_hardmapped"
   # ppo
   ppo_epochs: 4
   lam: 0.99
@@ -42,13 +70,12 @@ rl_script_args:
   lora_r: 16
   lora_alpha: 32
   # rl training
-  number_envs: 2
-  max_ep_len: 100
+  number_envs: 1
+  max_ep_len: 1
   epochs: 100
   steps_per_epoch: 10 #256
   save_freq: 1
   output_dir: ???
   loading_path:
   # environment
-  task: 'BabyAI-GoToRedBall-v0'
-  action_space: [ "turn_left","turn_right","go_forward","pick_up","drop","toggle" ]
+  action_space: [ "1","2","3","4" ]
